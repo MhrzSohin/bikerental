@@ -278,6 +278,16 @@ $_SESSION['brndid']=$result->bid;
             <div class="form-group">
               <textarea rows="4" class="form-control" name="message" placeholder="Message" required></textarea>
             </div>
+
+          <?php
+            // code to disable/enable button
+            $sql = "SELECT tblvehicles.*,tblbrands.BrandName,tblbrands.id as bid  from tblvehicles join tblbrands on tblbrands.id=tblvehicles.VehiclesBrand order by id desc limit 4";
+            $query = $dbh -> prepare($sql);
+            $query->execute();
+            $results=$query->fetchAll(PDO::FETCH_OBJ);
+
+            ?>
+
           <?php if($_SESSION['login'])
               {?>
               <div class="form-group">
