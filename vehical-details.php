@@ -33,7 +33,6 @@ echo "<script>alert('Something went wrong. Please try again');</script>";
 
 ?>
 
-
 <!DOCTYPE HTML>
 <html lang="en">
 <head>
@@ -279,24 +278,40 @@ $_SESSION['brndid']=$result->bid;
               <textarea rows="4" class="form-control" name="message" placeholder="Message" required></textarea>
             </div>
 
-          <?php
-            // code to disable/enable button
-            $sql = "SELECT tblvehicles.*,tblbrands.BrandName,tblbrands.id as bid  from tblvehicles join tblbrands on tblbrands.id=tblvehicles.VehiclesBrand order by id desc limit 4";
-            $query = $dbh -> prepare($sql);
-            $query->execute();
-            $results=$query->fetchAll(PDO::FETCH_OBJ);
+            
 
+
+       <?php
+        $vhid = $_GET["vhid"];
+        $useremail=$_SESSION['login'];
+         // code to disable/enable button 0 = not confirmed  1 = confirmed  2 = cancelled
+        $sql = "SELECT Vehicleid, Status,message,userEmail FROM tblbooking WHERE Vehicleid=:vhid AND userEmail=:useremail";
+        $query = $dbh->prepare($sql);
+        $query->bindParam(":vhid", $vhid);
+        $query->bindParam(":useremail", $useremail);
+        $query->execute();
+        $status = $query->fetch(PDO::FETCH_OBJ);
+
+        if ($_SESSION['login']) {
             ?>
+            <div class="form-group">
+                <?php if ($status->Status == 1) { ?>
+                    <input type="submit" class="btn" name="submit" value="Booked" disabled>
+                <?php } elseif ($status->Status === 0) { ?>
+                    <input type="submit" class="btn" name="submit" value="Pending" disabled>
+                <?php } else { ?>
+                    <input type="submit" class="btn" name="submit" value="Book Now">
+                <?php } ?>
+                
+            </div>
+            <?php
+        } else {
+            ?>
+            <a href="#loginform" class="btn btn-xs uppercase" data-toggle="modal" data-dismiss="modal">Login For Book</a>
+            <?php
+        }
+        ?>
 
-          <?php if($_SESSION['login'])
-              {?>
-              <div class="form-group">
-                <input type="submit" class="btn"  name="submit" value="Book Now">
-              </div>
-              <?php } else { ?>
-<a href="#loginform" class="btn btn-xs uppercase" data-toggle="modal" data-dismiss="modal">Login For Book</a>
-
-              <?php } ?>
           </form>
         </div>
       </aside>
